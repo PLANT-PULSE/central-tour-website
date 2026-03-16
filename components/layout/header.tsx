@@ -18,6 +18,9 @@ const destinations = [
   { title: "Cape Coast Castle", href: "/destinations/cape-coast-castle", description: "UNESCO World Heritage Site" },
   { title: "Elmina Castle", href: "/destinations/elmina-castle", description: "Oldest European building in Sub-Saharan Africa" },
   { title: "Kakum National Park", href: "/destinations/kakum-national-park", description: "Famous canopy walkway experience" },
+  { title: "Hans Cottage Botel", href: "/destinations/hans-cottage-botel", description: "Unique eco-lodge over crocodile lake" },
+  { title: "Assin Manso Slave River Site", href: "/destinations/assin-manso-slave-river-site", description: "Historic slave trade memorial" },
+  { title: "Fort St. Jago", href: "/destinations/fort-st-jago", description: "Panoramic views of Elmina coast" },
   { title: "All Destinations", href: "/destinations", description: "Explore all our destinations" },
 ]
 
