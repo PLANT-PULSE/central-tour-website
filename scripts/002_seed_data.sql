@@ -111,6 +111,51 @@ VALUES
 )
 ON CONFLICT (slug) DO NOTHING;
 
+-- Update destinations with gallery images
+UPDATE destinations SET 
+  gallery = ARRAY[
+    'https://images.unsplash.com/photo-1590070103837-4ae6d7c17f86?w=800',
+    'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+    'https://images.unsplash.com/photo-1534234828563-0bf62fb25c9f?w=800',
+    'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=800',
+    'https://images.unsplash.com/photo-1523821741446-edb2b68bb7a0?w=800',
+    'https://images.unsplash.com/photo-1531300185376-174bf7c0f5eb?w=800'
+  ]
+WHERE slug = 'cape-coast-castle';
+
+UPDATE destinations SET 
+  gallery = ARRAY[
+    'https://images.unsplash.com/photo-1568483381568-b3a2f8a19c6e?w=800',
+    'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+    'https://images.unsplash.com/photo-1534234828563-0bf62fb25c9f?w=800',
+    'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=800',
+    'https://images.unsplash.com/photo-1523821741446-edb2b68bb7a0?w=800',
+    'https://images.unsplash.com/photo-1531300185376-174bf7c0f5eb?w=800'
+  ]
+WHERE slug = 'elmina-castle';
+
+UPDATE destinations SET 
+  gallery = ARRAY[
+    'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800',
+    'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+    'https://images.unsplash.com/photo-1534234828563-0bf62fb25c9f?w=800',
+    'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=800',
+    'https://images.unsplash.com/photo-1523821741446-edb2b68bb7a0?w=800',
+    'https://images.unsplash.com/photo-1531300185376-174bf7c0f5eb?w=800'
+  ]
+WHERE slug = 'kakum-national-park';
+
+UPDATE destinations SET 
+  gallery = ARRAY[
+    'https://images.unsplash.com/photo-1504432842672-1a79f78e4084?w=800',
+    'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+    'https://images.unsplash.com/photo-1534234828563-0bf62fb25c9f?w=800',
+    'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=800',
+    'https://images.unsplash.com/photo-1523821741446-edb2b68bb7a0?w=800',
+    'https://images.unsplash.com/photo-1531300185376-174bf7c0f5eb?w=800'
+  ]
+WHERE slug = 'hans-cottage-botel';
+
 -- Insert activities for destinations
 INSERT INTO activities (destination_id, activity_name, description)
 SELECT d.id, activity.name, activity.description

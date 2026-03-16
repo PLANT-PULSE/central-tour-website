@@ -9,6 +9,7 @@ import { WhatsAppButton } from "@/components/ui/whatsapp-button"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { DestinationGallery } from "@/components/destination-gallery"
 import { 
   MapPin, 
   Clock, 
@@ -71,6 +72,20 @@ export default async function DestinationDetailPage({ params }: Props) {
     .neq('id', destination.id)
     .limit(3)
 
+  // Default gallery images if none in database
+  const defaultGallery = [
+    'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800',
+    'https://images.unsplash.com/photo-1568483381568-b3a2f8a19c6e?w=800',
+    'https://images.unsplash.com/photo-1590070103837-4ae6d7c17f86?w=800',
+    'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+    'https://images.unsplash.com/photo-1534234828563-0bf62fb25c9f?w=800',
+    'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=800',
+  ]
+
+  const galleryImages = destination.gallery && destination.gallery.length > 0 
+    ? [destination.image_url, ...destination.gallery].filter(Boolean)
+    : defaultGallery
+
   return (
     <>
       <Header />
@@ -121,6 +136,12 @@ export default async function DestinationDetailPage({ params }: Props) {
             </div>
           </div>
         </section>
+
+        {/* Image Gallery */}
+        <DestinationGallery 
+          destinationName={destination.name}
+          images={galleryImages}
+        />
 
         {/* Content Section */}
         <section className="py-12">
