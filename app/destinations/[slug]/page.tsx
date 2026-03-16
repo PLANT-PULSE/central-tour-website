@@ -30,7 +30,7 @@ const staticDestinations: Record<string, any> = {
     location: 'Cape Coast, Central Region',
     category: 'Historical',
     is_featured: true,
-    image_url: 'https://images.unsplash.com/photo-1590070103837-4ae6d7c17f86?w=1200',
+    image_url: '/images/cape-coast-castle.jpg',
     description: 'Cape Coast Castle is a UNESCO World Heritage Site and one of the most significant historical landmarks in West Africa. This imposing white fortress stands as a powerful reminder of the transatlantic slave trade, where millions of Africans were held before being shipped across the Atlantic. Today, it serves as a museum and memorial, offering visitors a deeply moving and educational experience.',
     history: 'Built by the Swedish Africa Company in 1653, Cape Coast Castle was later captured by the Dutch and then the British. For over 300 years, it served as a hub for the transatlantic slave trade. The castle\'s dungeons held thousands of enslaved Africans in horrific conditions before their forced journey to the Americas. In 1979, it was designated a UNESCO World Heritage Site.',
     short_description: 'UNESCO World Heritage Site and a powerful reminder of the transatlantic slave trade.',
@@ -40,8 +40,10 @@ const staticDestinations: Record<string, any> = {
     currency: 'GHS',
     highlights: ['UNESCO World Heritage Site', 'Museum with artifacts from the slave trade era', 'Door of No Return', 'Guided tours with local experts', 'Panoramic ocean views'],
     gallery: [
-      'https://images.unsplash.com/photo-1568483381568-b3a2f8a19c6e?w=800',
-      'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+      '/images/cape-coast-castle.jpg',
+      '/images/elmina-castle.jpg',
+      '/images/kakum-national-park.jpg',
+      '/images/hero-ghana.jpg',
     ],
   },
   'elmina-castle': {
@@ -51,7 +53,7 @@ const staticDestinations: Record<string, any> = {
     location: 'Elmina, Central Region',
     category: 'Historical',
     is_featured: true,
-    image_url: 'https://images.unsplash.com/photo-1568483381568-b3a2f8a19c6e?w=1200',
+    image_url: '/images/elmina-castle.jpg',
     description: 'Elmina Castle, also known as St. George Castle, is the oldest European building in existence south of the Sahara. This majestic white fortress overlooking the Atlantic Ocean is a UNESCO World Heritage Site and represents a crucial chapter in world history, particularly the transatlantic slave trade.',
     history: 'Built by the Portuguese in 1482, Elmina Castle was originally constructed for trade in gold and ivory. It later became a significant site in the slave trade under Dutch and British control. The castle has witnessed over 500 years of history and stands as a testament to the complex and often painful past of European colonialism in Africa.',
     short_description: 'The oldest European building in Sub-Saharan Africa, a UNESCO World Heritage Site.',
@@ -61,8 +63,10 @@ const staticDestinations: Record<string, any> = {
     currency: 'GHS',
     highlights: ['Oldest European building in Sub-Saharan Africa', 'UNESCO World Heritage Site', 'Stunning ocean views', 'Rich trading history', 'Nearby fishing harbor'],
     gallery: [
-      'https://images.unsplash.com/photo-1590070103837-4ae6d7c17f86?w=800',
-      'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+      '/images/elmina-castle.jpg',
+      '/images/cape-coast-castle.jpg',
+      '/images/kakum-national-park.jpg',
+      '/images/hero-ghana.jpg',
     ],
   },
   'kakum-national-park': {
@@ -72,7 +76,7 @@ const staticDestinations: Record<string, any> = {
     location: 'Kakum, Central Region',
     category: 'Nature',
     is_featured: true,
-    image_url: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1200',
+    image_url: '/images/kakum-national-park.jpg',
     description: 'Kakum National Park is a pristine tropical rainforest covering 375 square kilometers of biodiversity. Home to the famous Canopy Walkway, this park offers visitors a unique opportunity to experience the rainforest from treetop level, walking among ancient trees at heights of up to 40 meters above the forest floor.',
     history: 'Kakum was established as a national park in 1992 to protect the remaining virgin tropical rainforest in Ghana. The park is home to over 40 species of larger mammals, 400 species of butterflies, and over 200 bird species. The iconic Canopy Walkway was constructed in 1995 with support from USAID.',
     short_description: 'Pristine tropical rainforest with the famous Canopy Walkway experience.',
@@ -82,8 +86,10 @@ const staticDestinations: Record<string, any> = {
     currency: 'GHS',
     highlights: ['Famous Canopy Walkway', 'Trekking through ancient rainforest', 'Wildlife spotting', 'Bird watching', 'Nature walks'],
     gallery: [
-      'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800',
-      'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+      '/images/kakum-national-park.jpg',
+      '/images/cape-coast-castle.jpg',
+      '/images/elmina-castle.jpg',
+      '/images/hero-ghana.jpg',
     ],
   },
   'hans-cottage-botel': {
@@ -93,7 +99,7 @@ const staticDestinations: Record<string, any> = {
     location: 'Near Kakum, Central Region',
     category: 'Accommodation',
     is_featured: false,
-    image_url: 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1200',
+    image_url: '/images/kakum-national-park.jpg',
     description: 'Hans Cottage Botel is a unique eco-lodge built on stilts over a crocodile-inhabited lake. This distinctive accommodation offers visitors an unforgettable experience of sleeping above the water while observing crocodiles, exotic birds, and other wildlife in their natural habitat.',
     history: 'Established in the 1990s, Hans Cottage was designed as an eco-friendly destination that combines tourism with wildlife conservation. The resident crocodiles are descendants of animals that have inhabited the lake for generations, living in harmony with the lodge operations.',
     short_description: 'Unique eco-lodge built on stilts over a crocodile-inhabited lake.',
@@ -103,7 +109,10 @@ const staticDestinations: Record<string, any> = {
     currency: 'GHS',
     highlights: ['Unique crocodile viewing experience', 'Eco-friendly accommodation', 'Bird watching', 'Lake views', 'Restaurant on site'],
     gallery: [
-      'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+      '/images/kakum-national-park.jpg',
+      '/images/cape-coast-castle.jpg',
+      '/images/elmina-castle.jpg',
+      '/images/hero-ghana.jpg',
     ],
   },
 }
@@ -205,18 +214,19 @@ export default async function DestinationDetailPage({ params }: Props) {
 
   // Default gallery images if none in database
   const defaultGallery = [
-    'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800',
-    'https://images.unsplash.com/photo-1568483381568-b3a2f8a19c6e?w=800',
-    'https://images.unsplash.com/photo-1590070103837-4ae6d7c17f86?w=800',
-    'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
-    'https://images.unsplash.com/photo-1534234828563-0bf62fb25c9f?w=800',
-    'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=800',
+    '/images/hero-ghana.jpg',
+    '/images/cape-coast-castle.jpg',
+    '/images/elmina-castle.jpg',
+    '/images/kakum-national-park.jpg',
   ]
+
+  // Hero image fallback
+  const heroImage = destination.image_url || defaultGallery[0]
 
   // Get gallery images - handle both database and static data formats
   const galleryArray = destination.gallery as unknown as string[] | undefined
   const galleryImages = galleryArray && galleryArray.length > 0 
-    ? [destination.image_url, ...galleryArray].filter(Boolean)
+    ? [heroImage, ...galleryArray].filter(Boolean)
     : defaultGallery
 
   return (
@@ -226,7 +236,7 @@ export default async function DestinationDetailPage({ params }: Props) {
         {/* Hero Section */}
         <section className="relative h-[60vh] min-h-[400px]">
           <Image
-            src={destination.image_url}
+            src={heroImage}
             alt={destination.name}
             fill
             className="object-cover"
