@@ -21,18 +21,117 @@ import {
   MessageCircle
 } from "lucide-react"
 
+// Static fallback data
+const staticDestinations: Record<string, any> = {
+  'cape-coast-castle': {
+    id: '1',
+    name: 'Cape Coast Castle',
+    slug: 'cape-coast-castle',
+    location: 'Cape Coast, Central Region',
+    category: 'Historical',
+    is_featured: true,
+    image_url: 'https://images.unsplash.com/photo-1590070103837-4ae6d7c17f86?w=1200',
+    description: 'Cape Coast Castle is a UNESCO World Heritage Site and one of the most significant historical landmarks in West Africa. This imposing white fortress stands as a powerful reminder of the transatlantic slave trade, where millions of Africans were held before being shipped across the Atlantic. Today, it serves as a museum and memorial, offering visitors a deeply moving and educational experience.',
+    history: 'Built by the Swedish Africa Company in 1653, Cape Coast Castle was later captured by the Dutch and then the British. For over 300 years, it served as a hub for the transatlantic slave trade. The castle\'s dungeons held thousands of enslaved Africans in horrific conditions before their forced journey to the Americas. In 1979, it was designated a UNESCO World Heritage Site.',
+    short_description: 'UNESCO World Heritage Site and a powerful reminder of the transatlantic slave trade.',
+    entry_fee: 50.00,
+    opening_hours: '9:00 AM - 5:00 PM (Daily)',
+    best_time_to_visit: 'November to March (dry season)',
+    currency: 'GHS',
+    highlights: ['UNESCO World Heritage Site', 'Museum with artifacts from the slave trade era', 'Door of No Return', 'Guided tours with local experts', 'Panoramic ocean views'],
+    gallery: [
+      'https://images.unsplash.com/photo-1568483381568-b3a2f8a19c6e?w=800',
+      'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+    ],
+  },
+  'elmina-castle': {
+    id: '2',
+    name: 'Elmina Castle',
+    slug: 'elmina-castle',
+    location: 'Elmina, Central Region',
+    category: 'Historical',
+    is_featured: true,
+    image_url: 'https://images.unsplash.com/photo-1568483381568-b3a2f8a19c6e?w=1200',
+    description: 'Elmina Castle, also known as St. George Castle, is the oldest European building in existence south of the Sahara. This majestic white fortress overlooking the Atlantic Ocean is a UNESCO World Heritage Site and represents a crucial chapter in world history, particularly the transatlantic slave trade.',
+    history: 'Built by the Portuguese in 1482, Elmina Castle was originally constructed for trade in gold and ivory. It later became a significant site in the slave trade under Dutch and British control. The castle has witnessed over 500 years of history and stands as a testament to the complex and often painful past of European colonialism in Africa.',
+    short_description: 'The oldest European building in Sub-Saharan Africa, a UNESCO World Heritage Site.',
+    entry_fee: 50.00,
+    opening_hours: '9:00 AM - 5:00 PM (Daily)',
+    best_time_to_visit: 'November to March (dry season)',
+    currency: 'GHS',
+    highlights: ['Oldest European building in Sub-Saharan Africa', 'UNESCO World Heritage Site', 'Stunning ocean views', 'Rich trading history', 'Nearby fishing harbor'],
+    gallery: [
+      'https://images.unsplash.com/photo-1590070103837-4ae6d7c17f86?w=800',
+      'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+    ],
+  },
+  'kakum-national-park': {
+    id: '3',
+    name: 'Kakum National Park',
+    slug: 'kakum-national-park',
+    location: 'Kakum, Central Region',
+    category: 'Nature',
+    is_featured: true,
+    image_url: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1200',
+    description: 'Kakum National Park is a pristine tropical rainforest covering 375 square kilometers of biodiversity. Home to the famous Canopy Walkway, this park offers visitors a unique opportunity to experience the rainforest from treetop level, walking among ancient trees at heights of up to 40 meters above the forest floor.',
+    history: 'Kakum was established as a national park in 1992 to protect the remaining virgin tropical rainforest in Ghana. The park is home to over 40 species of larger mammals, 400 species of butterflies, and over 200 bird species. The iconic Canopy Walkway was constructed in 1995 with support from USAID.',
+    short_description: 'Pristine tropical rainforest with the famous Canopy Walkway experience.',
+    entry_fee: 60.00,
+    opening_hours: '8:00 AM - 4:00 PM (Daily)',
+    best_time_to_visit: 'November to February (dry season)',
+    currency: 'GHS',
+    highlights: ['Famous Canopy Walkway', 'Trekking through ancient rainforest', 'Wildlife spotting', 'Bird watching', 'Nature walks'],
+    gallery: [
+      'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800',
+      'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+    ],
+  },
+  'hans-cottage-botel': {
+    id: '4',
+    name: 'Hans Cottage Botel',
+    slug: 'hans-cottage-botel',
+    location: 'Near Kakum, Central Region',
+    category: 'Accommodation',
+    is_featured: false,
+    image_url: 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1200',
+    description: 'Hans Cottage Botel is a unique eco-lodge built on stilts over a crocodile-inhabited lake. This distinctive accommodation offers visitors an unforgettable experience of sleeping above the water while observing crocodiles, exotic birds, and other wildlife in their natural habitat.',
+    history: 'Established in the 1990s, Hans Cottage was designed as an eco-friendly destination that combines tourism with wildlife conservation. The resident crocodiles are descendants of animals that have inhabited the lake for generations, living in harmony with the lodge operations.',
+    short_description: 'Unique eco-lodge built on stilts over a crocodile-inhabited lake.',
+    entry_fee: 30.00,
+    opening_hours: '24 hours (accommodation), Day visits: 8:00 AM - 6:00 PM',
+    best_time_to_visit: 'Year-round, best November to March',
+    currency: 'GHS',
+    highlights: ['Unique crocodile viewing experience', 'Eco-friendly accommodation', 'Bird watching', 'Lake views', 'Restaurant on site'],
+    gallery: [
+      'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800',
+    ],
+  },
+}
+
 interface Props {
   params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const supabase = await createClient()
-  const { data: destination } = await supabase
-    .from('destinations')
-    .select('name, short_description')
-    .eq('slug', slug)
-    .single()
+  
+  // Try to get from database, fallback to static data
+  let destination = staticDestinations[slug]
+  
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('destinations')
+      .select('name, short_description')
+      .eq('slug', slug)
+      .single()
+    
+    if (data) {
+      destination = { ...destination, ...data }
+    }
+  } catch (error) {
+    // Use static data if database is not available
+  }
 
   if (!destination) {
     return { title: "Destination Not Found" }
@@ -46,31 +145,63 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DestinationDetailPage({ params }: Props) {
   const { slug } = await params
-  const supabase = await createClient()
-
-  const { data: destination } = await supabase
-    .from('destinations')
-    .select('*')
-    .eq('slug', slug)
-    .single()
+  
+  // Try to get from database, fallback to static data
+  let destination = staticDestinations[slug]
+  
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('destinations')
+      .select('*')
+      .eq('slug', slug)
+      .single()
+    
+    if (data) {
+      destination = { ...destination, ...data }
+    }
+  } catch (error) {
+    // Use static data if database is not available
+  }
 
   if (!destination) {
     notFound()
   }
 
-  // Fetch activities for this destination
-  const { data: activities } = await supabase
-    .from('activities')
-    .select('*')
-    .eq('destination_id', destination.id)
-
-  // Fetch related destinations (same category)
-  const { data: relatedDestinations } = await supabase
-    .from('destinations')
-    .select('*')
-    .eq('category', destination.category)
-    .neq('id', destination.id)
-    .limit(3)
+  // Fetch activities for this destination (only if database is available)
+  let activities: any[] = []
+  let relatedDestinations: any[] = []
+  
+  try {
+    const supabase = await createClient()
+    const { data: dbActivities } = await supabase
+      .from('activities')
+      .select('*')
+      .eq('destination_id', destination.id)
+    
+    if (dbActivities) {
+      activities = dbActivities
+    }
+    
+    // Fetch related destinations (same category)
+    const { data: dbRelated } = await supabase
+      .from('destinations')
+      .select('*')
+      .eq('category', destination.category)
+      .neq('id', destination.id)
+      .limit(3)
+    
+    if (dbRelated) {
+      relatedDestinations = dbRelated
+    }
+  } catch (error) {
+    // Use empty arrays if database is not available - related destinations will come from static data below
+    // Get related destinations from static data
+    const category = destination.category
+    relatedDestinations = Object.values(staticDestinations)
+      .filter((d: any) => d.category === category && d.slug !== destination.slug)
+      .slice(0, 3)
+  }
 
   // Default gallery images if none in database
   const defaultGallery = [
@@ -82,8 +213,10 @@ export default async function DestinationDetailPage({ params }: Props) {
     'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=800',
   ]
 
-  const galleryImages = destination.gallery && destination.gallery.length > 0 
-    ? [destination.image_url, ...destination.gallery].filter(Boolean)
+  // Get gallery images - handle both database and static data formats
+  const galleryArray = destination.gallery as unknown as string[] | undefined
+  const galleryImages = galleryArray && galleryArray.length > 0 
+    ? [destination.image_url, ...galleryArray].filter(Boolean)
     : defaultGallery
 
   return (

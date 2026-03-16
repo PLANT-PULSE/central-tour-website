@@ -14,13 +14,75 @@ export const metadata: Metadata = {
   description: "Explore all the incredible destinations in Ghana's Central Region - from UNESCO World Heritage Sites to pristine rainforests.",
 }
 
-export default async function DestinationsPage() {
-  const supabase = await createClient()
+// Static fallback data in case database is not configured
+const staticDestinations = [
+  {
+    id: '1',
+    name: 'Cape Coast Castle',
+    slug: 'cape-coast-castle',
+    location: 'Cape Coast, Central Region',
+    category: 'Historical',
+    is_featured: true,
+    image_url: 'https://images.unsplash.com/photo-1590070103837-4ae6d7c17f86?w=1200',
+    short_description: 'UNESCO World Heritage Site and a powerful reminder of the transatlantic slave trade.',
+    opening_hours: '9:00 AM - 5:00 PM',
+    entry_fee: 50.00,
+  },
+  {
+    id: '2',
+    name: 'Elmina Castle',
+    slug: 'elmina-castle',
+    location: 'Elmina, Central Region',
+    category: 'Historical',
+    is_featured: true,
+    image_url: 'https://images.unsplash.com/photo-1568483381568-b3a2f8a19c6e?w=1200',
+    short_description: 'The oldest European building in Sub-Saharan Africa, a UNESCO World Heritage Site.',
+    opening_hours: '9:00 AM - 5:00 PM',
+    entry_fee: 50.00,
+  },
+  {
+    id: '3',
+    name: 'Kakum National Park',
+    slug: 'kakum-national-park',
+    location: 'Kakum, Central Region',
+    category: 'Nature',
+    is_featured: true,
+    image_url: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1200',
+    short_description: 'Pristine tropical rainforest with the famous Canopy Walkway experience.',
+    opening_hours: '8:00 AM - 4:00 PM',
+    entry_fee: 60.00,
+  },
+  {
+    id: '4',
+    name: 'Hans Cottage Botel',
+    slug: 'hans-cottage-botel',
+    location: 'Near Kakum, Central Region',
+    category: 'Accommodation',
+    is_featured: false,
+    image_url: 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1200',
+    short_description: 'Unique eco-lodge built on stilts over a crocodile-inhabited lake.',
+    opening_hours: '24 hours',
+    entry_fee: 30.00,
+  },
+]
 
-  const { data: destinations } = await supabase
-    .from('destinations')
-    .select('*')
-    .order('is_featured', { ascending: false })
+export default async function DestinationsPage() {
+  let destinations = staticDestinations
+  
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('destinations')
+      .select('*')
+      .order('is_featured', { ascending: false })
+    
+    if (data && data.length > 0) {
+      destinations = data
+    }
+  } catch (error) {
+    // Use static data if database is not available
+    console.log('Using static destination data')
+  }
 
   // Group by category
   const categories = destinations?.reduce((acc, dest) => {
