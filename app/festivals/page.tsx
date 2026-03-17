@@ -1,28 +1,15 @@
 import { Metadata } from "next"
-import Image from "next/image"
-import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { WhatsAppButton } from "@/components/ui/whatsapp-button"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Calendar, MapPin, Clock, Check } from "lucide-react"
+import { FestivalsExplorer } from "@/components/festivals/festivals-explorer"
 
 export const metadata: Metadata = {
-  title: "Festivals",
-  description: "Experience the vibrant festivals and cultural celebrations of Ghana's Central Region throughout the year.",
+  title: "Festivals - Interactive Festival Explorer & Visit Planner",
+  description: "Explore the vibrant cultural festivals of Ghana's Central Region. Plan your visit to experience Aboakyer, Fetu Afahye, Bakatue, and more traditional celebrations.",
 }
 
-export default async function FestivalsPage() {
-  const supabase = await createClient()
-
-  const { data: festivals } = await supabase
-    .from('festivals')
-    .select('*')
-    .order('month')
-
+export default function FestivalsPage() {
   return (
     <>
       <Header />
@@ -31,101 +18,63 @@ export default async function FestivalsPage() {
         <section className="relative py-20 bg-accent">
           <div className="container mx-auto px-4 text-center">
             <h1 className="font-serif text-4xl md:text-5xl font-bold text-accent-foreground mb-4">
-              Cultural Festivals
+              Interactive Festival Explorer
             </h1>
             <p className="text-accent-foreground/80 max-w-2xl mx-auto text-lg">
-              Immerse yourself in the vibrant traditions and colorful celebrations 
-              that showcase the rich cultural heritage of Ghana&apos;s Central Region.
+              Discover the vibrant traditions and colorful celebrations that showcase 
+              the rich cultural heritage of Ghana's Central Region. Plan your visit to experience 
+              these spectacular festivals firsthand.
             </p>
           </div>
         </section>
 
-        {/* Festival Calendar */}
+        {/* Festival Explorer Section */}
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="font-serif text-3xl font-bold mb-4">Festival Calendar</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Plan your visit around these spectacular cultural events
-              </p>
-            </div>
+            <FestivalsExplorer initialView="grid" />
+          </div>
+        </section>
 
-            <div className="space-y-8">
-              {festivals?.map((festival) => (
-                <Card key={festival.id} className="overflow-hidden border-0 shadow-lg">
-                  <div className="grid grid-cols-1 lg:grid-cols-3">
-                    <div className="relative aspect-video lg:aspect-auto">
-                      <Image
-                        src={festival.image_url || '/images/festival-placeholder.jpg'}
-                        alt={festival.name}
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute top-4 left-4">
-                        <Badge className="bg-primary text-primary-foreground text-lg px-4 py-2">
-                          {festival.month}
-                        </Badge>
-                      </div>
-                    </div>
-                    <CardContent className="lg:col-span-2 p-8">
-                      <h3 className="font-serif text-2xl font-bold mb-3">{festival.name}</h3>
-                      
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          {festival.location}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {festival.duration}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          {festival.month}
-                        </span>
-                      </div>
-
-                      <p className="text-muted-foreground mb-6 leading-relaxed">
-                        {festival.description}
-                      </p>
-
-                      {festival.highlights && festival.highlights.length > 0 && (
-                        <div className="mb-6">
-                          <h4 className="font-semibold text-sm mb-3">Highlights</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {festival.highlights.map((highlight: string, i: number) => (
-                              <span 
-                                key={i} 
-                                className="flex items-center gap-1 text-sm bg-muted px-3 py-1 rounded-full"
-                              >
-                                <Check className="h-3 w-3 text-secondary" />
-                                {highlight}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="flex flex-col sm:flex-row gap-3">
-                        <Button asChild>
-                          <Link href={`/book?festival=${festival.slug}`}>
-                            Plan Your Visit
-                          </Link>
-                        </Button>
-                        <Button variant="outline" asChild>
-                          <a 
-                            href={`https://wa.me/233241234567?text=Hi! I'd like to attend the ${festival.name}.`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            Get More Info
-                          </a>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </div>
-                </Card>
-              ))}
+        {/* Info Section */}
+        <section className="py-16 bg-muted/50">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center p-6">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="font-serif text-xl font-bold mb-2">Year-Round Celebrations</h3>
+                <p className="text-muted-foreground">
+                  Festivals occur throughout the year, offering unique cultural experiences in every season.
+                </p>
+              </div>
+              
+              <div className="text-center p-6">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <h3 className="font-serif text-xl font-bold mb-2">Multiple Locations</h3>
+                <p className="text-muted-foreground">
+                  From Winneba to Cape Coast, explore festivals across the Central Region.
+                </p>
+              </div>
+              
+              <div className="text-center p-6">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+                <h3 className="font-serif text-xl font-bold mb-2">Rich Cultural Heritage</h3>
+                <p className="text-muted-foreground">
+                  Each festival tells a story of migration, harvest, and thanksgiving traditions.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -134,17 +83,31 @@ export default async function FestivalsPage() {
         <section className="py-16 bg-primary text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
             <h2 className="font-serif text-3xl font-bold mb-4">
-              Don&apos;t Miss These Celebrations
+              Plan Your Festival Visit Today
             </h2>
             <p className="text-primary-foreground/80 max-w-2xl mx-auto mb-8">
-              Experience authentic Ghanaian culture firsthand. Let us help you plan 
-              your trip to coincide with these spectacular festivals.
+              Experience authentic Ghanaian culture firsthand. Use our visit scheduler to plan 
+              your trip and coincide with these spectacular festivals.
             </p>
-            <Button size="lg" variant="outline" asChild className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-              <Link href="/contact">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a 
+                href="/contact"
+                className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg bg-white text-primary hover:bg-white/90 transition-colors"
+              >
                 Contact Our Team
-              </Link>
-            </Button>
+              </a>
+              <a 
+                href="https://wa.me/233241234567?text=Hi! I'd like to plan a visit to experience the festivals in Ghana's Central Region."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg border border-primary-foreground/30 hover:bg-primary-foreground/10 transition-colors"
+              >
+                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                Chat on WhatsApp
+              </a>
+            </div>
           </div>
         </section>
       </main>
