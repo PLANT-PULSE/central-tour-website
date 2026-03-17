@@ -61,14 +61,14 @@ export function ImageCarousel({
       )}
 
       {/* Images Container */}
-      <div className="relative h-[400px] md:h-[500px] lg:h-[600px]">
+      <div className="relative h-[300px] md:h-[400px] lg:h-[500px]">
         {images.map((image, index) => (
           <div
             key={index}
             className={`absolute inset-0 transition-all duration-700 ease-in-out ${
               index === currentIndex 
                 ? 'opacity-100 scale-100' 
-                : 'opacity-0 scale-105'
+                : 'opacity-0 scale-100'
             }`}
           >
             <Image

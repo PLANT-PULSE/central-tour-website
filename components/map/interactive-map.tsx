@@ -36,7 +36,15 @@ export function InteractiveMap({ destinations }: InteractiveMapProps) {
     // Dynamically import Leaflet
     const loadMap = async () => {
       const L = (await import('leaflet')).default
-      await import('leaflet/dist/leaflet.css')
+      
+      // Import leaflet CSS via link tag
+      if (!document.querySelector('#leaflet-css')) {
+        const link = document.createElement('link')
+        link.id = 'leaflet-css'
+        link.rel = 'stylesheet'
+        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+        document.head.appendChild(link)
+      }
 
       if (!mapRef.current) return
 
@@ -134,12 +142,28 @@ export function InteractiveMap({ destinations }: InteractiveMapProps) {
               <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                 {selectedDestination.short_description}
               </p>
-              <Button asChild className="w-full">
-                <Link href={`/destinations/${selectedDestination.slug}`}>
-                  View Details
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+              <div className="flex gap-2">
+                <Button asChild className="flex-1">
+                  <Link href={`/destinations/${selectedDestination.slug}`}>
+                    View Details
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                {selectedDestination.latitude && selectedDestination.longitude && (
+                  <Button variant="outline" asChild>
+                    <a 
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${selectedDestination.latitude},${selectedDestination.longitude}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Open in Google Maps"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                      </svg>
+                    </a>
+                  </Button>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
