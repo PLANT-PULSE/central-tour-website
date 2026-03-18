@@ -18,6 +18,7 @@ import { Check } from "lucide-react"
 export function ContactForm() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -29,12 +30,34 @@ export function ContactForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError(null)
 
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    try {
+      const response = await fetch('/api/send-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+      })
 
-    setSuccess(true)
-    setLoading(false)
+      const result = await response.json()
+
+      if (result.success) {
+        setSuccess(true)
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
+      } else {
+        setError(result.error || 'Failed to send message. Please try again.')
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again later.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (success) {
@@ -135,6 +158,10 @@ export function ContactForm() {
           'Send Message'
         )}
       </Button>
+
+      {error && (
+        <p className="text-red-500 text-sm mt-2">{error}</p>
+      )}
     </form>
   )
 }
