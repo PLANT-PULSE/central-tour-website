@@ -41,6 +41,8 @@ export function ContactForm() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
+          phone: formData.phone,
+          subject: formData.subject,
           message: formData.message,
         }),
       })
