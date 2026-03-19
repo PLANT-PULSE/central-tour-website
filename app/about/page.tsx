@@ -8,22 +8,11 @@ import { WhatsAppButton } from "@/components/ui/whatsapp-button"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Check, Users, Award, Heart, MapPin, Target, Eye } from "lucide-react"
-import { ImageCarousel } from "@/components/image-carousel"
 
 export const metadata: Metadata = {
   title: "About Us",
   description: "Learn about Central Region Tourism - your trusted partner for exploring Ghana's Central Region.",
 }
-
-// Carousel images from the image folders
-const carouselImages = [
-  '/images/cape-coast-castle/download (1).jpeg',
-  '/images/elmina-castle/download (1).jpeg',
-  '/images/kakum/download (1).jpeg',
-  '/images/hans-cottage/download (1).jpeg',
-  '/images/fort-st-jago/download (1).jpeg',
-  '/images/assin-manso-slave-river-site/download (1).jpeg',
-]
 
 // Mission and Vision statements
 const missionStatement = "Our mission is to promote tourism in Ghana's Central Region by providing a reliable digital platform that allows visitors to discover cultural landmarks, plan memorable trips, and conveniently book transportation to the region's most iconic destinations."
@@ -49,26 +38,24 @@ export default async function AboutPage() {
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative py-20 bg-primary">
-          <div className="container mx-auto px-4 text-center">
+        <section className="relative py-20">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/images/kakum-national-park.jpg"
+              alt="About Central Tour Ghana"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-primary/80" />
+          </div>
+          <div className="container relative z-10 mx-auto px-4 text-center">
             <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary-foreground mb-4">
               About Us
             </h1>
             <p className="text-primary-foreground/80 max-w-2xl mx-auto text-lg">
               {company?.tagline || 'Discover the Heart of Ghana'}
             </p>
-          </div>
-        </section>
-
-        {/* Image Carousel */}
-        <section className="py-8 -mt-4 relative z-10">
-          <div className="container mx-auto px-4">
-            <ImageCarousel 
-              images={carouselImages} 
-              title="Explore Ghana's Central Region"
-              autoPlay={true}
-              interval={4000}
-            />
           </div>
         </section>
 

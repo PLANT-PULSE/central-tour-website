@@ -160,8 +160,18 @@ export default function DestinationsPage() {
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative py-16 md:py-20 bg-primary">
-          <div className="container mx-auto px-4 text-center">
+        <section className="relative py-16 md:py-20">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/images/cape-coast-castle.jpg"
+              alt="Explore Ghana's Central Region Destinations"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-primary/80" />
+          </div>
+          <div className="container relative z-10 mx-auto px-4 text-center">
             <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-3 md:mb-4">
               Explore Our Destinations
             </h1>

@@ -1,5 +1,6 @@
 import { Metadata } from "next"
 import { Suspense } from "react"
+import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
@@ -41,8 +42,18 @@ export default async function BookPage({
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="py-16 bg-primary">
-          <div className="container mx-auto px-4 text-center">
+        <section className="relative py-16">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/images/hero-ghana.jpg"
+              alt="Book Your Ghana Adventure"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-primary/80" />
+          </div>
+          <div className="container relative z-10 mx-auto px-4 text-center">
             <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary-foreground mb-4">
               Book Your Trip
             </h1>

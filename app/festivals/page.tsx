@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import Image from "next/image"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { WhatsAppButton } from "@/components/ui/whatsapp-button"
@@ -15,8 +16,18 @@ export default function FestivalsPage() {
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative py-20 bg-accent">
-          <div className="container mx-auto px-4 text-center">
+        <section className="relative py-20">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/images/fetu-afahye.jpg"
+              alt="Festivals of Ghana's Central Region"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-accent/80" />
+          </div>
+          <div className="container relative z-10 mx-auto px-4 text-center">
             <h1 className="font-serif text-4xl md:text-5xl font-bold text-accent-foreground mb-4">
               Interactive Festival Explorer
             </h1>

@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import Image from "next/image"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { WhatsAppButton } from "@/components/ui/whatsapp-button"
@@ -19,8 +20,18 @@ export default async function BlogPage() {
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-primary/10 via-accent/20 to-secondary/30">
-          <div className="container mx-auto px-4 text-center">
+        <section className="relative py-20">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/images/blog-placeholder.jpg"
+              alt="Tourism Blog from Ghana's Central Region"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/60 via-accent/40 to-secondary/50" />
+          </div>
+          <div className="container relative z-10 mx-auto px-4 text-center">
             <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
               Tourism & Festival News
             </h1>

@@ -1,5 +1,6 @@
 import { Metadata } from "next"
 import Link from "next/link"
+import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
@@ -29,8 +30,18 @@ export default async function ContactPage() {
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="py-20 bg-secondary">
-          <div className="container mx-auto px-4 text-center">
+        <section className="relative py-20">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/images/elmina-castle.jpg"
+              alt="Contact Central Tour"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-secondary/80" />
+          </div>
+          <div className="container relative z-10 mx-auto px-4 text-center">
             <h1 className="font-serif text-4xl md:text-5xl font-bold text-secondary-foreground mb-4">
               Contact Us
             </h1>
