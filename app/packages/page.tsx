@@ -1,7 +1,10 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/client"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { WhatsAppButton } from "@/components/ui/whatsapp-button"
@@ -15,13 +18,113 @@ export const metadata: Metadata = {
   description: "Choose from our carefully curated tour packages to explore Ghana's Central Region - from heritage trails to nature adventures.",
 }
 
-export default async function PackagesPage() {
-  const supabase = await createClient()
+interface TourPackage {
+  id: string
+  name: string
+  slug: string
+  short_description: string
+  description: string
+  duration: string
+  max_group_size: number
+  price: number
+  image_url: string
+  is_featured: boolean
+  includes: string[]
+  category: string
+}
 
-  const { data: packages } = await supabase
-    .from('tour_packages')
-    .select('*')
-    .order('is_featured', { ascending: false })
+// Static fallback packages
+const staticPackages: TourPackage[] = [
+  {
+    id: '1',
+    name: 'Heritage Trail',
+    slug: 'heritage-trail',
+    short_description: '2 Day Historical Journey through Ghana\'s UNESCO World Heritage Sites',
+    description: 'Explore the rich history and cultural heritage of Ghana\'s Central Region',
+    duration: '2 Days',
+    max_group_size: 20,
+    price: 299,
+    image_url: '/images/heritage-trail.jpg',
+    is_featured: true,
+    includes: ['Guide', 'Transport', 'Meals', 'Entrance Fees'],
+    category: 'heritage'
+  },
+  {
+    id: '2',
+    name: 'Nature Adventure',
+    slug: 'nature-adventure',
+    short_description: '3 Day Nature Experience in Kakum National Park and Rainforests',
+    description: 'Experience the breathtaking natural beauty of Ghana\'s Central Region',
+    duration: '3 Days',
+    max_group_size: 15,
+    price: 349,
+    image_url: '/images/nature-adventure.jpg',
+    is_featured: true,
+    includes: ['Guide', 'Transport', 'Meals', 'Park Fees'],
+    category: 'nature'
+  },
+  {
+    id: '3',
+    name: 'Complete Tour',
+    slug: 'complete-tour',
+    short_description: '3 Day Comprehensive Tour - Heritage, Nature & Culture',
+    description: 'The ultimate Ghana experience combining all aspects of the region',
+    duration: '3 Days',
+    max_group_size: 20,
+    price: 599,
+    image_url: '/images/complete-tour.jpg',
+    is_featured: true,
+    includes: ['All Meals', 'Guide', 'Transport', 'Accommodation'],
+    category: 'complete'
+  }
+]
+
+export default function PackagesPage() {
+  const [packages, setPackages] = useState<TourPackage[]>([])
+  const [loading, setLoading] = useState(true)
+  const [tourTypeFilter, setTourTypeFilter] = useState("all")
+  const [priceFilter, setPriceFilter] = useState("all")
+  const [durationFilter, setDurationFilter] = useState("all")
+
+  useEffect(() => {
+    async function fetchPackages() {
+      try {
+        const supabase = createClient()
+        const { data } = await supabase
+          .from('tour_packages')
+          .select('*')
+          .order('is_featured', { ascending: false })
+        
+        if (data && data.length > 0) {
+          setPackages(data)
+        } else {
+          setPackages(staticPackages)
+        }
+      } catch (error) {
+        setPackages(staticPackages)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPackages()
+  }, [])
+
+  // Filter packages
+  const filteredPackages = packages.filter(pkg => {
+    // Tour type filter
+    if (tourTypeFilter !== "all" && pkg.category !== tourTypeFilter) {
+      return false
+    }
+    // Price filter
+    if (priceFilter === "under-300" && pkg.price >= 300) return false
+    if (priceFilter === "300-500" && (pkg.price < 300 || pkg.price > 500)) return false
+    if (priceFilter === "over-500" && pkg.price <= 500) return false
+    // Duration filter
+    if (durationFilter === "2-days" && !pkg.duration.includes("2")) return false
+    if (durationFilter === "3-days" && !pkg.duration.includes("3")) return false
+    return true
+  })
 
   return (
     <>
@@ -40,11 +143,87 @@ export default async function PackagesPage() {
           </div>
         </section>
 
+        {/* Filter Section */}
+        <section className="py-8 border-b bg-muted/30">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-wrap gap-4 items-center justify-between">
+              <div className="flex flex-wrap gap-4">
+                {/* Tour Type Filter */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-medium">Tour Type</label>
+                  <select 
+                    value={tourTypeFilter}
+                    onChange={(e) => setTourTypeFilter(e.target.value)}
+                    className="h-10 px-3 rounded-md border bg-background"
+                  >
+                    <option value="all">All Types</option>
+                    <option value="heritage">Heritage</option>
+                    <option value="nature">Nature</option>
+                    <option value="complete">Complete Tour</option>
+                  </select>
+                </div>
+
+                {/* Price Filter */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-medium">Price Range</label>
+                  <select 
+                    value={priceFilter}
+                    onChange={(e) => setPriceFilter(e.target.value)}
+                    className="h-10 px-3 rounded-md border bg-background"
+                  >
+                    <option value="all">All Prices</option>
+                    <option value="under-300">Under GHS 300</option>
+                    <option value="300-500">GHS 300 - 500</option>
+                    <option value="over-500">Over GHS 500</option>
+                  </select>
+                </div>
+
+                {/* Duration Filter */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-medium">Duration</label>
+                  <select 
+                    value={durationFilter}
+                    onChange={(e) => setDurationFilter(e.target.value)}
+                    className="h-10 px-3 rounded-md border bg-background"
+                  >
+                    <option value="all">All Durations</option>
+                    <option value="2-days">2 Days</option>
+                    <option value="3-days">3 Days</option>
+                  </select>
+                </div>
+              </div>
+
+              <p className="text-muted-foreground">
+                Showing {filteredPackages.length} package{filteredPackages.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Packages Grid */}
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {packages?.map((pkg) => (
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+            ) : filteredPackages.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground text-lg">No packages match your filters.</p>
+                <Button 
+                  variant="link" 
+                  onClick={() => {
+                    setTourTypeFilter("all")
+                    setPriceFilter("all")
+                    setDurationFilter("all")
+                  }}
+                >
+                  Clear filters
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {filteredPackages.map((pkg) => (
                 <Card key={pkg.id} className="overflow-hidden border-0 shadow-lg">
                   <div className="grid grid-cols-1 md:grid-cols-2">
                     <div className="relative aspect-square md:aspect-auto">
@@ -112,6 +291,7 @@ export default async function PackagesPage() {
                 </Card>
               ))}
             </div>
+            )}
           </div>
         </section>
 
