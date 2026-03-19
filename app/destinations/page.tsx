@@ -1,18 +1,15 @@
-import { Metadata } from "next"
+"use client"
+
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/client"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { WhatsAppButton } from "@/components/ui/whatsapp-button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { MapPin, Clock, ArrowRight } from "lucide-react"
-
-export const metadata: Metadata = {
-  title: "Destinations",
-  description: "Explore all the incredible destinations in Ghana's Central Region - from UNESCO World Heritage Sites to pristine rainforests.",
-}
 
 // Static fallback data in case database is not configured
 const staticDestinations = [
@@ -90,56 +87,109 @@ const staticDestinations = [
   },
 ]
 
-export default async function DestinationsPage() {
-  let destinations = staticDestinations
-  
-  try {
-    const supabase = await createClient()
-    const { data } = await supabase
-      .from('destinations')
-      .select('*')
-      .order('is_featured', { ascending: false })
-    
-    if (data && data.length > 0) {
-      destinations = data
-    }
-  } catch (error) {
-    // Use static data if database is not available
-    console.log('Using static destination data')
-  }
+interface Destination {
+  id: string
+  name: string
+  slug: string
+  location: string
+  category: string
+  is_featured: boolean
+  image_url: string
+  short_description: string
+  opening_hours: string
+  entry_fee: number
+}
 
-  // Group by category
-  const categories = destinations?.reduce((acc, dest) => {
-    const cat = dest.category || 'Other'
-    if (!acc[cat]) acc[cat] = []
-    acc[cat].push(dest)
-    return acc
-  }, {} as Record<string, typeof destinations>)
+export default function DestinationsPage() {
+  const [destinations, setDestinations] = useState<Destination[]>([])
+  const [loading, setLoading] = useState(true)
+  const [activeFilter, setActiveFilter] = useState("All")
+
+  useEffect(() => {
+    async function fetchDestinations() {
+      try {
+        const supabase = createClient()
+        const { data } = await supabase
+          .from('destinations')
+          .select('*')
+          .order('is_featured', { ascending: false })
+        
+        if (data && data.length > 0) {
+          setDestinations(data)
+        } else {
+          setDestinations(staticDestinations)
+        }
+      } catch (error) {
+        console.log('Using static destination data')
+        setDestinations(staticDestinations)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDestinations()
+  }, [])
+
+  // Get unique categories
+  const categories = Array.from(new Set(destinations.map(dest => dest.category || "Other")))
+
+  // Filter destinations based on active filter
+  const filteredDestinations = activeFilter === "All" 
+    ? destinations 
+    : destinations.filter(dest => dest.category === activeFilter)
+
+  // Get the last 3 destinations
+  const lastThreeDestinations = filteredDestinations.slice(-3)
+  const otherDestinations = filteredDestinations.slice(0, -3)
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+        <Footer />
+        <WhatsAppButton />
+      </>
+    )
+  }
 
   return (
     <>
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative py-20 bg-primary">
+        <section className="relative py-16 md:py-20 bg-primary">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary-foreground mb-4">
+            <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-3 md:mb-4">
               Explore Our Destinations
             </h1>
-            <p className="text-primary-foreground/80 max-w-2xl mx-auto text-lg">
+            <p className="text-primary-foreground/80 max-w-2xl mx-auto text-base md:text-lg px-4">
               Discover the rich history, vibrant culture, and stunning natural beauty 
-              of Ghana&apos;s Central Region.
+              of Ghana's Central Region.
             </p>
           </div>
         </section>
 
         {/* Filter Pills */}
-        <section className="py-8 border-b border-border sticky top-16 bg-background z-40">
+        <section className="py-4 md:py-8 border-b border-border sticky top-16 bg-background z-40">
           <div className="container mx-auto px-4">
             <div className="flex flex-wrap gap-2 justify-center">
-              <Badge variant="default" className="cursor-pointer">All</Badge>
-              {categories && Object.keys(categories).map((cat) => (
-                <Badge key={cat} variant="outline" className="cursor-pointer hover:bg-accent">
+              <Badge 
+                variant={activeFilter === "All" ? "default" : "outline"} 
+                className="cursor-pointer hover:bg-accent text-xs md:text-sm px-3 py-1"
+                onClick={() => setActiveFilter("All")}
+              >
+                All
+              </Badge>
+              {categories.map((cat) => (
+                <Badge 
+                  key={cat} 
+                  variant={activeFilter === cat ? "default" : "outline"} 
+                  className="cursor-pointer hover:bg-accent text-xs md:text-sm px-3 py-1"
+                  onClick={() => setActiveFilter(cat)}
+                >
                   {cat}
                 </Badge>
               ))}
@@ -148,73 +198,99 @@ export default async function DestinationsPage() {
         </section>
 
         {/* Destinations Grid */}
-        <section className="py-16">
+        <section className="py-8 md:py-16">
           <div className="container mx-auto px-4">
-            {categories && Object.entries(categories).map(([category, dests]) => (
-              <div key={category} className="mb-16 last:mb-0">
-                <h2 className="font-serif text-2xl font-bold mb-6 flex items-center gap-2">
-                  <span className="w-8 h-1 bg-primary rounded"></span>
-                  {category} Sites
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {dests?.map((destination) => (
-                    <Card key={destination.id} className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow">
-                      <div className="relative aspect-[4/3] overflow-hidden">
-                        <Image
-                          src={destination.image_url}
-                          alt={destination.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        {destination.is_featured && (
-                          <Badge className="absolute top-4 right-4 bg-accent text-accent-foreground">
-                            Featured
-                          </Badge>
-                        )}
-                        <Badge className="absolute top-4 left-4 bg-secondary text-secondary-foreground">
-                          {destination.category}
-                        </Badge>
-                      </div>
-                      <CardContent className="p-6">
-                        <h3 className="font-serif text-xl font-bold mb-2 group-hover:text-primary transition-colors">
-                          {destination.name}
-                        </h3>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            {destination.location}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {destination.opening_hours}
-                          </span>
-                        </div>
-                        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                          {destination.short_description}
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold text-primary">
-                            GHS {destination.entry_fee?.toFixed(2)}
-                          </span>
-                          <Link 
-                            href={`/destinations/${destination.slug}`}
-                            className="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1"
-                          >
-                            Explore
-                            <ArrowRight className="h-4 w-4" />
-                          </Link>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+            {/* Show message if no destinations match filter */}
+            {filteredDestinations.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No destinations found for this category.</p>
               </div>
-            ))}
+            ) : (
+              <>
+                {/* First row - destinations except last 3 */}
+                {otherDestinations.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
+                    {otherDestinations.map((destination) => (
+                      <DestinationCard key={destination.id} destination={destination} />
+                    ))}
+                  </div>
+                )}
+
+                {/* Last 3 destinations - styled differently */}
+                {lastThreeDestinations.length > 0 && (
+                  <div>
+                    <h2 className="font-serif text-xl md:text-2xl font-bold mb-4 md:mb-6 flex items-center gap-2">
+                      <span className="w-6 md:w-8 h-1 bg-primary rounded"></span>
+                      More to Explore
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                      {lastThreeDestinations.map((destination) => (
+                        <DestinationCard key={destination.id} destination={destination} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </section>
       </main>
       <Footer />
       <WhatsAppButton />
     </>
+  )
+}
+
+// Destination Card Component
+function DestinationCard({ destination }: { destination: Destination }) {
+  return (
+    <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow">
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <Image
+          src={destination.image_url}
+          alt={destination.name}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        {destination.is_featured && (
+          <Badge className="absolute top-2 md:top-4 right-2 md:right-4 bg-accent text-accent-foreground text-xs">
+            Featured
+          </Badge>
+        )}
+        <Badge className="absolute top-2 md:top-4 left-2 md:left-4 bg-secondary text-secondary-foreground text-xs">
+          {destination.category}
+        </Badge>
+      </div>
+      <CardContent className="p-4 md:p-6">
+        <h3 className="font-serif text-lg md:text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+          {destination.name}
+        </h3>
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-muted-foreground mb-2 md:mb-3">
+          <span className="flex items-center gap-1">
+            <MapPin className="h-3 w-3 md:h-4 md:w-4" />
+            {destination.location}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3 md:h-4 md:w-4" />
+            {destination.opening_hours}
+          </span>
+        </div>
+        <p className="text-muted-foreground text-sm mb-3 md:mb-4 line-clamp-2">
+          {destination.short_description}
+        </p>
+        <div className="flex items-center justify-between">
+          <span className="font-semibold text-primary text-sm md:text-base">
+            GHS {destination.entry_fee?.toFixed(2)}
+          </span>
+          <Link 
+            href={`/destinations/${destination.slug}`}
+            className="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1"
+          >
+            Explore
+            <ArrowRight className="h-3 w-3 md:h-4 md:w-4" />
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
