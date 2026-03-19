@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
@@ -12,11 +11,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock, Users, Check } from "lucide-react"
-
-export const metadata: Metadata = {
-  title: "Tour Packages",
-  description: "Choose from our carefully curated tour packages to explore Ghana's Central Region - from heritage trails to nature adventures.",
-}
 
 interface TourPackage {
   id: string
