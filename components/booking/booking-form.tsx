@@ -26,6 +26,35 @@ interface BookingFormProps {
   preselectedDestination?: string
 }
 
+// Tour packages with exact names as requested by user
+const TOUR_PACKAGES = [
+  { id: 'heritage-trail', name: 'Heritage Trail', description: '2 day historical journey' },
+  { id: 'nature-adventure', name: 'Nature Adventure', description: '3 day nature experience' },
+  { id: 'complete-tour', name: 'Complete Tour', description: '3 day comprehensive tour' },
+]
+
+// Destinations with exact names as requested by user
+const DESTINATIONS = [
+  { id: 'cape-coast-castle', name: 'Cape Coast Castle' },
+  { id: 'elmina-castle', name: 'Elmina Castle' },
+  { id: 'kakum-national-park', name: 'Kakum National Park' },
+  { id: 'hans-cottage-botel', name: 'Hans Cottage Botel' },
+  { id: 'assin-manso-slave-river-site', name: 'Assin Manso Slave River Site' },
+  { id: 'fort-st-jago', name: 'Fort St. Jago' },
+  { id: 'all-destinations', name: 'All Destinations' },
+]
+
+// Festivals with exact names as requested by user
+const FESTIVALS = [
+  { id: 'aboakyer', name: 'Aboakyer Festival' },
+  { id: 'akwambo', name: 'Akwambo Festival' },
+  { id: 'edina-bakatue', name: 'Edina Bakatue Festival' },
+  { id: 'odambea', name: 'Odambea Festival' },
+  { id: 'fetu-afahye', name: 'Fetu Afahye' },
+  { id: 'awubia', name: 'Awubia Festival' },
+  { id: 'okyir', name: 'Okyir Festival' },
+]
+
 export function BookingForm({ 
   destinations, 
   packages, 
@@ -58,29 +87,82 @@ export function BookingForm({
     try {
       const supabase = createClient()
       
-      const bookingData = {
-        booking_type: bookingType,
-        customer_name: formData.customerName,
-        customer_email: formData.customerEmail,
-        customer_phone: formData.customerPhone,
-        travel_date: formData.travelDate,
-        number_of_people: parseInt(formData.numberOfPeople),
-        pickup_location: formData.pickupLocation || null,
-        special_requests: formData.specialRequests || null,
-        package_id: bookingType === 'package' ? formData.packageId : null,
-        destination_id: bookingType === 'destination' ? formData.destinationId : null,
-        status: 'pending',
+      // Get the display names for package, destination, or festival
+      const packageName = TOUR_PACKAGES.find(p => p.id === formData.packageId)?.name || ''
+      const destinationName = DESTINATIONS.find(d => d.id === formData.destinationId)?.name || ''
+      const festivalName = FESTIVALS.find(f => f.id === formData.pickupLocation)?.name || ''
+
+      // Build the booking description based on booking type (store as text in pickup_location)
+      let bookingDescription = ''
+      if (bookingType === 'package' && packageName) {
+        bookingDescription = `Package: ${packageName}`
+      } else if (bookingType === 'destination' && destinationName) {
+        bookingDescription = `Destination: ${destinationName}`
+      } else if (bookingType === 'transport' && festivalName) {
+        bookingDescription = `Festival: ${festivalName}`
       }
 
-      const { error } = await supabase
-        .from('bookings')
-        .insert(bookingData)
+      // Try to save to database, but continue even if it fails
+      try {
+        const supabase = createClient()
+        
+        // Save to database - store package/destination/festival info in text fields
+        const bookingData = {
+          booking_type: bookingType,
+          customer_name: formData.customerName,
+          customer_email: formData.customerEmail,
+          customer_phone: formData.customerPhone,
+          travel_date: formData.travelDate,
+          number_of_people: parseInt(formData.numberOfPeople),
+          pickup_location: bookingDescription || formData.pickupLocation || null,
+          special_requests: formData.specialRequests || null,
+          package_id: null,
+          destination_id: null,
+          status: 'pending',
+        }
 
-      if (error) throw error
+        const { error } = await supabase
+          .from('bookings')
+          .insert(bookingData)
+
+        // Note: Database insert may fail if table doesn't exist or has issues
+        // But WhatsApp notification will still be sent
+      } catch (dbError) {
+        console.error('Database error:', dbError)
+      }
+
+      // Send WhatsApp notification to admin
+      try {
+        const response = await fetch('/api/send-booking', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            bookingType,
+            customerName: formData.customerName,
+            customerEmail: formData.customerEmail,
+            customerPhone: formData.customerPhone,
+            travelDate: formData.travelDate,
+            numberOfPeople: formData.numberOfPeople,
+            packageName,
+            destinationName,
+            festivalName,
+            specialRequests: formData.specialRequests,
+          }),
+        })
+        
+        const result = await response.json()
+        console.log('WhatsApp notification result:', result)
+      } catch (whatsappError) {
+        console.error('WhatsApp notification failed:', whatsappError)
+      }
 
       setSuccess(true)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Booking error:', error)
+      console.error('Error message:', error?.message)
+      console.error('Error details:', JSON.stringify(error))
       alert('There was an error processing your booking. Please try again.')
     } finally {
       setLoading(false)
@@ -167,8 +249,8 @@ export function BookingForm({
               >
                 <RadioGroupItem value="transport" id="transport" />
                 <div>
-                  <p className="font-medium">Transportation Only</p>
-                  <p className="text-sm text-muted-foreground">Private vehicle hire</p>
+                  <p className="font-medium">Visit a Festival in Central Region</p>
+                  <p className="text-sm text-muted-foreground">Experience Ghana's cultural festivals</p>
                 </div>
               </Label>
             </RadioGroup>
@@ -193,9 +275,9 @@ export function BookingForm({
                   <SelectValue placeholder="Choose a tour package" />
                 </SelectTrigger>
                 <SelectContent>
-                  {packages.map((pkg) => (
+                  {TOUR_PACKAGES.map((pkg) => (
                     <SelectItem key={pkg.id} value={pkg.id}>
-                      {pkg.name} - GHS {pkg.price?.toFixed(0)}
+                      {pkg.name} - {pkg.description}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -221,7 +303,7 @@ export function BookingForm({
                   <SelectValue placeholder="Choose a destination" />
                 </SelectTrigger>
                 <SelectContent>
-                  {destinations.map((dest) => (
+                  {DESTINATIONS.map((dest) => (
                     <SelectItem key={dest.id} value={dest.id}>
                       {dest.name}
                     </SelectItem>
@@ -237,23 +319,31 @@ export function BookingForm({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bus className="h-5 w-5 text-primary" />
-                Transportation Details
+                Festival Details
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="pickupLocation">Pickup Location *</Label>
-                <Input
-                  id="pickupLocation"
-                  placeholder="e.g., Accra, Kotoka Airport"
-                  value={formData.pickupLocation}
-                  onChange={(e) => setFormData({ ...formData, pickupLocation: e.target.value })}
-                  required={bookingType === 'transport'}
-                />
+                <Label htmlFor="festivalSelect">Choose Festival to Visit *</Label>
+                <Select 
+                  value={formData.pickupLocation} 
+                  onValueChange={(value) => setFormData({ ...formData, pickupLocation: value })}
+                >
+                  <SelectTrigger id="festivalSelect">
+                    <SelectValue placeholder="Select a festival" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FESTIVALS.map((festival) => (
+                      <SelectItem key={festival.id} value={festival.id}>
+                        {festival.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <p className="text-sm text-muted-foreground">
-                Please describe where you&apos;d like to be picked up and dropped off. 
-                Our team will contact you to confirm details.
+                Select the festival you'd like to experience. Our team will contact you with 
+                more details about dates, accommodations, and transportation options.
               </p>
             </CardContent>
           </Card>

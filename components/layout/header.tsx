@@ -27,8 +27,8 @@ const destinations = [
 
 const tours = [
   { title: "Heritage Trail", href: "/packages/heritage-trail", description: "2-day historical journey" },
-  { title: "Nature Adventure", href: "/packages/nature-adventure", description: "1-day nature experience" },
-  { title: "Complete Tour", href: "/packages/complete-central", description: "3-day comprehensive tour" },
+  { title: "Nature Adventure", href: "/packages/nature-adventure", description: "3-day nature experience" },
+  { title: "Complete Tour", href: "/packages/complete-tour", description: "3-day comprehensive tour" },
   { title: "All Packages", href: "/packages", description: "View all tour packages" },
 ]
 
