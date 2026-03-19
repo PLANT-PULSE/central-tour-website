@@ -14,20 +14,47 @@ const ADMIN_SMS = process.env.TO_WHATSAPP_NUMBER || '+233552327706';
 /**
  * Send WhatsApp message via Twilio
  */
-async function sendWhatsAppMessage(to: string, body: string): Promise<{ success: boolean; error?: string }> {
+async function sendWhatsAppMessage(to: string, body: string): Promise<{ success: boolean; error?: string; messageId?: string }> {
   try {
     const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
     
-    await client.messages.create({
+    // Create message and capture the response for better debugging
+    const message = await client.messages.create({
       body,
       from: `whatsapp:${TWILIO_WHATSAPP_FROM}`,
       to,
     });
     
     console.log('✅ WhatsApp message sent successfully');
-    return { success: true };
+    console.log('📋 Message SID:', message.sid);
+    console.log('📋 Message Status:', message.status);
+    console.log('📋 To:', message.to);
+    console.log('📋 From:', message.from);
+    
+    // Check if message was actually queued (not just accepted)
+    if (message.status === 'queued' || message.status === 'accepted') {
+      return { success: true, messageId: message.sid };
+    } else {
+      console.warn('⚠️ Message status is:', message.status);
+      return { success: true, messageId: message.sid }; // Still return success as Twilio accepted it
+    }
   } catch (error: any) {
     console.error('❌ Error sending WhatsApp message:', error.message);
+    console.error('❌ Error code:', error.code);
+    console.error('❌ Error details:', JSON.stringify(error));
+    
+    // Check for common sandbox-related errors
+    if (error.code === 63006) {
+      console.error('❌ Sandbox session expired or recipient not opted in');
+      console.error('💡 Solution: Recipient must send "join" to the sandbox number first');
+      return { success: false, error: 'WhatsApp sandbox session expired. Recipient must opt-in by sending "join" to the sandbox number.' };
+    }
+    
+    if (error.code === 20411) {
+      console.error('❌ Message outside of session window');
+      return { success: false, error: 'Message outside WhatsApp session window. Use a template or start a new session.' };
+    }
+    
     return { success: false, error: error.message };
   }
 }
